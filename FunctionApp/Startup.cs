@@ -27,6 +27,7 @@ public class Startup : FunctionsStartup
     {
         services.AddMediatR(typeof(Startup));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceLogBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ExceptionLogBehavior<,>));
     }
 
     private static void AddAutoMapper(IServiceCollection services)
