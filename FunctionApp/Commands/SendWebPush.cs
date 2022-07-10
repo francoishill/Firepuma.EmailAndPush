@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.EmailAndPush.FunctionApp.Config;
-using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Exceptions;
 using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Helpers;
 using Firepuma.EmailAndPush.FunctionApp.Models.ValueObjects;
 using MediatR;
@@ -21,7 +20,7 @@ namespace Firepuma.EmailAndPush.FunctionApp.Commands;
 
 public static class SendWebPush
 {
-    public class Command : IRequest<Result>
+    public class Command : IRequest<SuccessOrFailure<SuccessfulResult, FailureResult>>
     {
         public string DeviceEndpoint { get; init; }
         public string P256dh { get; init; }
@@ -36,13 +35,30 @@ public static class SendWebPush
         // public string MessageUniqueTopicId { get; init; } //TODO: could not get topic working, tested Chrome and MSEdge browsers
     }
 
-    public class Result
+    public class SuccessfulResult
     {
         // Empty result for now
     }
 
+    public class FailureResult
+    {
+        public FailureReason Reason { get; set; }
+        public string Message { get; set; }
 
-    public class Handler : IRequestHandler<Command, Result>
+        public FailureResult(FailureReason reason, string message)
+        {
+            Reason = reason;
+            Message = message;
+        }
+    }
+
+    public enum FailureReason
+    {
+        DeviceGone,
+    }
+
+
+    public class Handler : IRequestHandler<Command, SuccessOrFailure<SuccessfulResult, FailureResult>>
     {
         private readonly IOptions<WebPushOptions> _options;
 
@@ -52,7 +68,7 @@ public static class SendWebPush
             _options = options;
         }
 
-        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<SuccessOrFailure<SuccessfulResult, FailureResult>> Handle(Command command, CancellationToken cancellationToken)
         {
             var deviceEndpoint = command.DeviceEndpoint;
             var p256dh = command.P256dh;
@@ -105,16 +121,11 @@ public static class SendWebPush
                     },
                     cancellationToken);
 
-                return new Result();
+                return new SuccessfulResult();
             }
-            catch (WebPushException exception)
+            catch (WebPushException webPushException) when (webPushException.StatusCode == HttpStatusCode.Gone)
             {
-                if (exception.StatusCode == HttpStatusCode.Gone)
-                {
-                    throw new WebPushDeviceGoneException($"Push device endpoint '{deviceEndpoint}.ToString()}}' does not exist anymore");
-                }
-
-                throw;
+                return new FailureResult(FailureReason.DeviceGone, webPushException.Message);
             }
         }
     }

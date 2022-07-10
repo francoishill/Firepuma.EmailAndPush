@@ -35,7 +35,9 @@ public class SendEmailTrigger
 
         var requestDto = JsonConvert.DeserializeObject<SendEmailRequestDto>(emailMessageRequest);
 
-        log.LogInformation("Processing request for ToEmail '{ToEmail}' and Subject '{Subject}'", requestDto.ToEmail, requestDto.Subject);
+        log.LogInformation(
+            "Processing request for ToEmail '{ToEmail}', Subject '{Subject}' and ApplicationId '{ApplicationId}'",
+            requestDto.ToEmail, requestDto.Subject, requestDto.ApplicationId);
 
         if (!ValidationHelpers.ValidateDataAnnotations(requestDto, out var validationResultsForRequest))
         {

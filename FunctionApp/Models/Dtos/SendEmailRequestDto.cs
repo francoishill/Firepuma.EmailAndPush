@@ -4,6 +4,9 @@ namespace Firepuma.EmailAndPush.FunctionApp.Models.Dtos;
 
 public class SendEmailRequestDto
 {
+    [Required]
+    public string ApplicationId { get; set; }
+
     public string TemplateId { get; set; }
     public object TemplateData { get; set; }
 

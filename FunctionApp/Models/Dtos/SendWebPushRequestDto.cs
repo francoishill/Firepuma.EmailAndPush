@@ -8,6 +8,9 @@ namespace Firepuma.EmailAndPush.FunctionApp.Models.Dtos;
 public class SendWebPushRequestDto
 {
     [Required]
+    public string ApplicationId { get; set; }
+    
+    [Required]
     public string DeviceEndpoint { get; set; }
 
     [Required]

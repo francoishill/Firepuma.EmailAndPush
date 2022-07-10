@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.EmailAndPush.FunctionApp.Commands;
+using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Helpers;
 using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Validation;
 using Firepuma.EmailAndPush.FunctionApp.Models.Dtos;
+using Firepuma.EmailAndPush.FunctionApp.Models.TableModels;
 using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -27,13 +29,17 @@ public class SendWebPushTrigger
         [ServiceBusTrigger("%SendWebPushQueueName%", Connection = "SendWebPushServiceBus")] string webPushMessageRequest,
         string messageId,
         ILogger log,
+        [Table("UnsubscribedPushDevices")] IAsyncCollector<UnsubscribedPushDevices> unsubscribedDevicesCollector,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# ServiceBus queue trigger function processing message ID {Id}", messageId);
 
         var requestDto = JsonConvert.DeserializeObject<SendWebPushRequestDto>(webPushMessageRequest);
+        var applicationId = requestDto.ApplicationId;
 
-        log.LogInformation("Processing request for DeviceEndpoint '{DeviceEndpoint}'", requestDto.DeviceEndpoint);
+        log.LogInformation(
+            "Processing request for DeviceEndpoint '{DeviceEndpoint}' and ApplicationId '{ApplicationId}'",
+            requestDto.DeviceEndpoint, requestDto.ApplicationId);
 
         if (!ValidationHelpers.ValidateDataAnnotations(requestDto, out var validationResultsForRequest))
         {
@@ -52,6 +58,35 @@ public class SendWebPushTrigger
             // MessageUniqueTopicId = requestDto.MessageUniqueTopicId, //TODO: could not get topic working, tested Chrome and MSEdge browsers
         };
 
-        await _mediator.Send(command, cancellationToken);
+        var result = await _mediator.Send(command, cancellationToken);
+
+        if (!result.IsSuccessful)
+        {
+            var failure = result.Failure;
+
+            if (failure.Reason == SendWebPush.FailureReason.DeviceGone)
+            {
+                log.LogInformation("Push device endpoint '{DeviceEndpoint}' does not exist anymore", requestDto.DeviceEndpoint);
+
+                var unsubscribeReason = $"{failure.Reason.ToString()} {failure.Message}";
+                var unsubscribedDevice = new UnsubscribedPushDevices
+                {
+                    PartitionKey = applicationId,
+                    RowKey = StringUtils.CreateMd5(requestDto.DeviceEndpoint),
+                    DeviceEndpoint = requestDto.DeviceEndpoint,
+                    UnsubscribeReason = unsubscribeReason,
+                };
+
+                await unsubscribedDevicesCollector.AddAsync(unsubscribedDevice, cancellationToken);
+            }
+            else
+            {
+                log.LogError(
+                    "Failed to send push notification to device endpoint '{DeviceEndpoint}', failure reason '{Reason}', failure message '{Message}'",
+                    requestDto.DeviceEndpoint, failure.Reason.ToString(), failure.Message);
+
+                throw new Exception($"Failed to send push notification to device endpoint '{requestDto.DeviceEndpoint}', failure reason '{failure.Reason.ToString()}', failure message '{failure.Message}'");
+            }
+        }
     }
 }
