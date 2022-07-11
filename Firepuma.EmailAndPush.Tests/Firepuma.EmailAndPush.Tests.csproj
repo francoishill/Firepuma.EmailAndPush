@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\FunctionApp\FunctionApp.csproj" />
+      <ProjectReference Include="..\Firepuma.EmailAndPush.FunctionApp\Firepuma.EmailAndPush.FunctionApp.csproj" />
     </ItemGroup>
 
 </Project>

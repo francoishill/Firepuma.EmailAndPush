@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionApp", "FunctionApp\FunctionApp.csproj", "{80A0C4FD-CEC7-47A7-8564-E6B181AA6F85}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.EmailAndPush.FunctionApp", "Firepuma.EmailAndPush.FunctionApp\Firepuma.EmailAndPush.FunctionApp.csproj", "{80A0C4FD-CEC7-47A7-8564-E6B181AA6F85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", "{E1702EF1-BD08-4AA6-8723-8D5A22402C73}"
 	ProjectSection(SolutionItems) = preProject
@@ -8,7 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{7F377FF7-EE90-4238-847E-4E865999A822}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.EmailAndPush.Tests", "Firepuma.EmailAndPush.Tests\Firepuma.EmailAndPush.Tests.csproj", "{7F377FF7-EE90-4238-847E-4E865999A822}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
