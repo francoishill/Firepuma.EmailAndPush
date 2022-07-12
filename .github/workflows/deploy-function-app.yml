@@ -5,7 +5,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'Firepuma-EmailAndPush-MicroService'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'FunctionApp'
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Firepuma.EmailAndPush.FunctionApp'
   DOTNET_VERSION: '6.0'
 
 jobs:
