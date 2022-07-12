@@ -32,8 +32,26 @@ jobs:
 
       - name: 'Deploy FunctionApp'
         uses: Azure/functions-action@v1
-        id: fa
+        id: deploy_functionapp
         with:
           app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
           package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
+      - name: 'Publish Abstractions nuget package'
+        id: publish_nuget_abstractions
+        uses: brandedoutcast/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: Firepuma.EmailAndPush.Abstractions/Firepuma.EmailAndPush.Abstractions.csproj
+          BUILD_CONFIGURATION: Release
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          # INCLUDE_SYMBOLS: true
+
+      - name: 'Publish Client nuget package'
+        id: publish_nuget_client
+        uses: brandedoutcast/publish-nuget@v2
+        with:
+          PROJECT_FILE_PATH: Firepuma.EmailAndPush.Client/Firepuma.EmailAndPush.Client.csproj
+          BUILD_CONFIGURATION: Release
+          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          # INCLUDE_SYMBOLS: true

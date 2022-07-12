@@ -7,11 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Firepuma.EmailAndPush.Client" Version="0.0.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\Firepuma.EmailAndPush.Client\Firepuma.EmailAndPush.Client.csproj" />
     </ItemGroup>
 
 </Project>
