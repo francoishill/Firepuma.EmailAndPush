@@ -44,18 +44,16 @@ jobs:
 
       - name: 'Publish Abstractions nuget package'
         id: publish_nuget_abstractions
-        uses: brandedoutcast/publish-nuget@v2
+        uses: brandedoutcast/publish-nuget@v2.5.5
         with:
           PROJECT_FILE_PATH: Firepuma.EmailAndPush.Abstractions/Firepuma.EmailAndPush.Abstractions.csproj
-          BUILD_CONFIGURATION: Release
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           # INCLUDE_SYMBOLS: true
 
       - name: 'Publish Client nuget package'
         id: publish_nuget_client
-        uses: brandedoutcast/publish-nuget@v2
+        uses: brandedoutcast/publish-nuget@v2.5.5
         with:
           PROJECT_FILE_PATH: Firepuma.EmailAndPush.Client/Firepuma.EmailAndPush.Client.csproj
-          BUILD_CONFIGURATION: Release
           NUGET_KEY: ${{secrets.NUGET_API_KEY}}
           # INCLUDE_SYMBOLS: true
