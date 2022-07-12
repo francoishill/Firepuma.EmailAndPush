@@ -10,6 +10,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OtherFiles", "OtherFiles", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.EmailAndPush.Tests", "Firepuma.EmailAndPush.Tests\Firepuma.EmailAndPush.Tests.csproj", "{7F377FF7-EE90-4238-847E-4E865999A822}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.EmailAndPush.Client", "Firepuma.EmailAndPush.Client\Firepuma.EmailAndPush.Client.csproj", "{056A3A8B-7073-47B4-BF7F-B99589D191E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{6C7BC5F4-B478-477B-823B-CA7056B67A0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleSendEmailOrWebPushApi", "Examples\ExampleSendEmailOrWebPushApi\ExampleSendEmailOrWebPushApi.csproj", "{481076BC-453A-4BBC-BC08-3A4DD1171D66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.EmailAndPush.Abstractions", "Firepuma.EmailAndPush.Abstractions\Firepuma.EmailAndPush.Abstractions.csproj", "{BFD55F19-42C6-49FE-8E4C-8C7476BF0129}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +32,20 @@ Global
 		{7F377FF7-EE90-4238-847E-4E865999A822}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F377FF7-EE90-4238-847E-4E865999A822}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F377FF7-EE90-4238-847E-4E865999A822}.Release|Any CPU.Build.0 = Release|Any CPU
+		{056A3A8B-7073-47B4-BF7F-B99589D191E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{056A3A8B-7073-47B4-BF7F-B99589D191E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{056A3A8B-7073-47B4-BF7F-B99589D191E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{056A3A8B-7073-47B4-BF7F-B99589D191E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{481076BC-453A-4BBC-BC08-3A4DD1171D66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{481076BC-453A-4BBC-BC08-3A4DD1171D66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{481076BC-453A-4BBC-BC08-3A4DD1171D66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{481076BC-453A-4BBC-BC08-3A4DD1171D66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BFD55F19-42C6-49FE-8E4C-8C7476BF0129}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BFD55F19-42C6-49FE-8E4C-8C7476BF0129}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BFD55F19-42C6-49FE-8E4C-8C7476BF0129}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BFD55F19-42C6-49FE-8E4C-8C7476BF0129}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{481076BC-453A-4BBC-BC08-3A4DD1171D66} = {6C7BC5F4-B478-477B-823B-CA7056B67A0A}
 	EndGlobalSection
 EndGlobal

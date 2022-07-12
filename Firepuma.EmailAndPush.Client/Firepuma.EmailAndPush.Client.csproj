@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RepositoryUrl>https://github.com/francoishill/Firepuma.EmailAndPush</RepositoryUrl>
+        <PackageTags>Email, WebPush</PackageTags>
+        <Company>Firepuma</Company>
+        <Authors>Francois Hill</Authors>
+        <Description>This library can be used to interact with the EmailAndPush function app.</Description>
+        <Version>0.0.1</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.8.1" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Firepuma.EmailAndPush.Abstractions\Firepuma.EmailAndPush.Abstractions.csproj" />
+    </ItemGroup>
+
+</Project>

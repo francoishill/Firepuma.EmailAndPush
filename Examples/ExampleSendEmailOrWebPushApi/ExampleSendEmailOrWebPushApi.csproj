@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>3f498a80-08b9-4dfd-8658-c7ceb9acc2d7</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Firepuma.EmailAndPush.Client\Firepuma.EmailAndPush.Client.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Firepuma.EmailAndPush.FunctionApp.Models.ValueObjects;
+﻿namespace Firepuma.EmailAndPush.Abstractions.Models.ValueObjects;
 
 // https://stackoverflow.com/a/34636692/1224216
 public class Either<TLeft, TRight>

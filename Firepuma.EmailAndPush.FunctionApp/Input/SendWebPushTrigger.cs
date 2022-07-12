@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.EmailAndPush.Abstractions.Infrastructure.Validation;
+using Firepuma.EmailAndPush.Abstractions.Models.Dtos;
 using Firepuma.EmailAndPush.FunctionApp.Commands;
 using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Helpers;
-using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Validation;
-using Firepuma.EmailAndPush.FunctionApp.Models.Dtos;
 using Firepuma.EmailAndPush.FunctionApp.Models.TableModels;
 using MediatR;
 using Microsoft.Azure.WebJobs;
@@ -66,7 +66,7 @@ public class SendWebPushTrigger
 
             if (failure.Reason == SendWebPush.FailureReason.DeviceGone)
             {
-                log.LogInformation("Push device endpoint '{DeviceEndpoint}' does not exist anymore", requestDto.DeviceEndpoint);
+                log.LogInformation("Push device endpoint does not exist anymore: '{DeviceEndpoint}'", requestDto.DeviceEndpoint);
 
                 var unsubscribeReason = $"{failure.Reason.ToString()} {failure.Message}";
                 var unsubscribedDevice = new UnsubscribedPushDevices

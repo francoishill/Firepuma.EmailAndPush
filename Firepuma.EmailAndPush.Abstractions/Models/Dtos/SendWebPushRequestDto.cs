@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Firepuma.EmailAndPush.FunctionApp.Models.ValueObjects;
+using Firepuma.EmailAndPush.Abstractions.Models.ValueObjects;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Firepuma.EmailAndPush.FunctionApp.Models.Dtos;
+namespace Firepuma.EmailAndPush.Abstractions.Models.Dtos;
 
 public class SendWebPushRequestDto
 {

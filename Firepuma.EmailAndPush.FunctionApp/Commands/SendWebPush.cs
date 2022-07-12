@@ -2,9 +2,9 @@
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.EmailAndPush.Abstractions.Models.ValueObjects;
 using Firepuma.EmailAndPush.FunctionApp.Config;
 using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Helpers;
-using Firepuma.EmailAndPush.FunctionApp.Models.ValueObjects;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

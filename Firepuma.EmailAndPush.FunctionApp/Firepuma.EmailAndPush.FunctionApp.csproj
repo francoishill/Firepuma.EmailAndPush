@@ -24,4 +24,7 @@
             <CopyToPublishDirectory>Never</CopyToPublishDirectory>
         </None>
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Firepuma.EmailAndPush.Abstractions\Firepuma.EmailAndPush.Abstractions.csproj" />
+    </ItemGroup>
 </Project>

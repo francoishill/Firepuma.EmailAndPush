@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
+using Firepuma.EmailAndPush.Abstractions.Models.ValueObjects;
 using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Helpers;
-using Firepuma.EmailAndPush.FunctionApp.Models.ValueObjects;
 using Xunit;
 
-namespace Tests.FunctionApp.Infrastructure.Helpers;
+namespace Firepuma.EmailAndPush.Tests.FunctionApp.Infrastructure.Helpers;
 
 public class EnumDescriptionHelperExtensionsTests
 {

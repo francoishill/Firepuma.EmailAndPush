@@ -1,4 +1,4 @@
-﻿namespace Firepuma.EmailAndPush.FunctionApp.Models.ValueObjects;
+﻿namespace Firepuma.EmailAndPush.Abstractions.Models.ValueObjects;
 
 public class SuccessOrFailure<TSuccess, TFailure> : Either<TSuccess, TFailure>
 {

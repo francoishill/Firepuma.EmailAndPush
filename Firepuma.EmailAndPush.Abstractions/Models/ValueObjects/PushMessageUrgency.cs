@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace Firepuma.EmailAndPush.FunctionApp.Models.ValueObjects;
+namespace Firepuma.EmailAndPush.Abstractions.Models.ValueObjects;
 
 public enum PushMessageUrgency
 {

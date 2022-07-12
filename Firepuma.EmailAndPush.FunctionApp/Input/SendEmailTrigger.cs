@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Firepuma.EmailAndPush.Abstractions.Infrastructure.Validation;
+using Firepuma.EmailAndPush.Abstractions.Models.Dtos;
 using Firepuma.EmailAndPush.FunctionApp.Commands;
-using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Validation;
-using Firepuma.EmailAndPush.FunctionApp.Models.Dtos;
 using MediatR;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;

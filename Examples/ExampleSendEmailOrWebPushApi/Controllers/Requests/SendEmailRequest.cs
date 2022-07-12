@@ -1,12 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Firepuma.EmailAndPush.FunctionApp.Models.Dtos;
+namespace ExampleSendEmailOrWebPushApi.Controllers.Requests;
 
-public class SendEmailRequestDto
+public class SendEmailRequest
 {
-    [Required]
-    public string ApplicationId { get; set; }
-
     public string TemplateId { get; set; }
     public object TemplateData { get; set; }
 

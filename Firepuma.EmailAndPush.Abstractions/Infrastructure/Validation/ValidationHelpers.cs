@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Firepuma.EmailAndPush.FunctionApp.Infrastructure.Validation;
+namespace Firepuma.EmailAndPush.Abstractions.Infrastructure.Validation;
 
 public static class ValidationHelpers
 {
