@@ -5,6 +5,7 @@ on:
 
 env:
   DOTNET_VERSION: '6.0'
+  VERSION_SUFFIX: "build-${{ github.run_number }}"
 
 jobs:
   build-and-deploy:
@@ -30,8 +31,8 @@ jobs:
 
       - name: Package
         run: |
-          dotnet pack --configuration Release --output . Firepuma.EmailAndPush.Abstractions/Firepuma.EmailAndPush.Abstractions.csproj
-          dotnet pack --configuration Release --output . Firepuma.EmailAndPush.Client/Firepuma.EmailAndPush.Client.csproj
+          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.EmailAndPush.Abstractions/Firepuma.EmailAndPush.Abstractions.csproj
+          dotnet pack --configuration Release --output . --version-suffix ${{ env.VERSION_SUFFIX }} Firepuma.EmailAndPush.Client/Firepuma.EmailAndPush.Client.csproj
 
       - name: Publish
         run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

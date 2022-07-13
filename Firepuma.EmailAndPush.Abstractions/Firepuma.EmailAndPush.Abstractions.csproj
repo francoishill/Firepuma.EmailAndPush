@@ -9,7 +9,7 @@
         <Company>Firepuma</Company>
         <Authors>Francois Hill</Authors>
         <Description>This library contains abstractions shared between EmailAndPush Client and FunctionApp.</Description>
-        <Version>0.0.2</Version>
+        <VersionPrefix>0.0.2</VersionPrefix>
     </PropertyGroup>
 
 </Project>

@@ -9,7 +9,7 @@
         <Company>Firepuma</Company>
         <Authors>Francois Hill</Authors>
         <Description>This library can be used to interact with the EmailAndPush function app.</Description>
-        <Version>0.0.2</Version>
+        <VersionPrefix>0.0.2</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
