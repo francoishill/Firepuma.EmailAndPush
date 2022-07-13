@@ -1,11 +1,9 @@
-﻿name: Deploy FunctionApp
+﻿name: Deploy Nuget packages
 
 on:
-  [push]
+  [ push ]
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'Firepuma-EmailAndPush-MicroService'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'Firepuma.EmailAndPush.FunctionApp'
   DOTNET_VERSION: '6.0'
 
 jobs:
@@ -27,17 +25,13 @@ jobs:
           dotnet restore Firepuma.EmailAndPush.FunctionApp
           dotnet restore Firepuma.EmailAndPush.Tests
 
-      - name: Build FunctionApp
-        run: dotnet build --configuration Release --no-restore --output ./output
-        working-directory: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-
       - name: Test
         run: dotnet test --no-restore
 
-      - name: 'Deploy FunctionApp'
-        uses: Azure/functions-action@v1
-        id: deploy_functionapp
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
-          publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+      - name: Package
+        run: |
+          dotnet pack --configuration Release --output . Firepuma.EmailAndPush.Abstractions/Firepuma.EmailAndPush.Abstractions.csproj
+          dotnet pack --configuration Release --output . Firepuma.EmailAndPush.Client/Firepuma.EmailAndPush.Client.csproj
+
+      - name: Publish
+        run: dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
