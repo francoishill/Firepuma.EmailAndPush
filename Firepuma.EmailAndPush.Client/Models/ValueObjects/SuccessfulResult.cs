@@ -1,6 +1,6 @@
 ﻿namespace Firepuma.EmailAndPush.Client.Models.ValueObjects;
 
-public class EnqueueSuccessfulResult
+public class SuccessfulResult
 {
     // nothing here
 }

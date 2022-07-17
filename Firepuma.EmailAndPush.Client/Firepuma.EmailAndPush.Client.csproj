@@ -9,12 +9,13 @@
         <Company>Firepuma</Company>
         <Authors>Francois Hill</Authors>
         <Description>This library can be used to interact with the EmailAndPush function app.</Description>
-        <VersionPrefix>0.0.3</VersionPrefix>
+        <VersionPrefix>0.1.0</VersionPrefix>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.8.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.1.1" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
       <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
       <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     </ItemGroup>

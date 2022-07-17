@@ -17,10 +17,22 @@ public class Startup : FunctionsStartup
     {
         var services = builder.Services;
 
+        AddEventGridOptions(services);
+
         AddAutoMapper(services);
         AddMediator(services);
 
         AddWebPush(services);
+    }
+
+    private static void AddEventGridOptions(IServiceCollection services)
+    {
+        var environmentName = EnvironmentVariableHelpers.GetRequiredEnvironmentVariable("EnvironmentName");
+
+        services.Configure<EventGridOptions>(opt =>
+        {
+            opt.SubjectFactory = applicationId => $"firepuma/{environmentName}/email-and-push-service/{applicationId}";
+        });
     }
 
     private static void AddMediator(IServiceCollection services)

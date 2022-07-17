@@ -6,13 +6,7 @@ namespace ExampleSendEmailOrWebPushApi.Controllers.Requests;
 public class SendWebPushRequest
 {
     [Required]
-    public string DeviceEndpoint { get; set; }
-
-    [Required]
-    public string P256dh { get; set; }
-
-    [Required]
-    public string AuthSecret { get; set; }
+    public string UserId { get; set; }
 
     [Required]
     public string MessageTitle { get; set; }

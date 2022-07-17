@@ -1,11 +1,11 @@
 ﻿namespace Firepuma.EmailAndPush.Client.Models.ValueObjects;
 
-public class EnqueueFailedResult
+public class FailedResult
 {
     public FailedReason Reason { get; set; }
     public string[] Errors { get; set; }
 
-    public EnqueueFailedResult(FailedReason reason, string[] errors)
+    public FailedResult(FailedReason reason, string[] errors)
     {
         Reason = reason;
         Errors = errors;
@@ -13,6 +13,7 @@ public class EnqueueFailedResult
 
     public enum FailedReason
     {
+        Unknown,
         InputValidationFailed,
     }
 }

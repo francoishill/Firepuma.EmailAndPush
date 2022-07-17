@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Firepuma.EmailAndPush.Abstractions.Infrastructure.Validation;
-using Firepuma.EmailAndPush.Abstractions.Models.Dtos;
+using Firepuma.EmailAndPush.Abstractions.Models.Dtos.ServiceBusMessages;
 using Firepuma.EmailAndPush.FunctionApp.Commands;
 using MediatR;
 using Microsoft.Azure.WebJobs;

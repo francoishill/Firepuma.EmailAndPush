@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Firepuma.EmailAndPush.Abstractions.Models.Dtos;
+namespace Firepuma.EmailAndPush.Abstractions.Models.Dtos.ServiceBusMessages;
 
 public class SendEmailRequestDto
 {

@@ -3,7 +3,7 @@ using Firepuma.EmailAndPush.Abstractions.Models.ValueObjects;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Firepuma.EmailAndPush.Abstractions.Models.Dtos;
+namespace Firepuma.EmailAndPush.Abstractions.Models.Dtos.ServiceBusMessages;
 
 public class SendWebPushRequestDto
 {
@@ -11,13 +11,7 @@ public class SendWebPushRequestDto
     public string ApplicationId { get; set; }
     
     [Required]
-    public string DeviceEndpoint { get; set; }
-
-    [Required]
-    public string P256dh { get; set; }
-
-    [Required]
-    public string AuthSecret { get; set; }
+    public string UserId { get; set; }
 
     [Required]
     public string MessageTitle { get; set; }

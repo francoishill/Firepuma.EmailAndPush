@@ -1,26 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Messaging.EventGrid;
 using Firepuma.EmailAndPush.Abstractions.Infrastructure.Validation;
-using Firepuma.EmailAndPush.Abstractions.Models.Dtos;
+using Firepuma.EmailAndPush.Abstractions.Models.Dtos.EventGridMessages;
+using Firepuma.EmailAndPush.Abstractions.Models.Dtos.ServiceBusMessages;
 using Firepuma.EmailAndPush.FunctionApp.Commands;
+using Firepuma.EmailAndPush.FunctionApp.Config;
 using Firepuma.EmailAndPush.FunctionApp.Infrastructure.Helpers;
 using Firepuma.EmailAndPush.FunctionApp.Models.TableModels;
 using MediatR;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+
+// ReSharper disable SuggestBaseTypeForParameter
 
 namespace Firepuma.EmailAndPush.FunctionApp.Input;
 
 public class SendWebPushTrigger
 {
+    private readonly IOptions<EventGridOptions> _eventGridOptions;
     private readonly IMediator _mediator;
 
     public SendWebPushTrigger(
+        IOptions<EventGridOptions> eventGridOptions,
         IMediator mediator)
     {
+        _eventGridOptions = eventGridOptions;
         _mediator = mediator;
     }
 
@@ -29,28 +41,117 @@ public class SendWebPushTrigger
         [ServiceBusTrigger("%SendWebPushQueueName%", Connection = "SendWebPushServiceBus")] string webPushMessageRequest,
         string messageId,
         ILogger log,
+        [Table("WebPushDevices")] CloudTable webPushDevicesTable,
         [Table("UnsubscribedPushDevices")] IAsyncCollector<UnsubscribedPushDevices> unsubscribedDevicesCollector,
+        [EventGrid(TopicEndpointUri = "EventGridEndpoint", TopicKeySetting = "EventGridKey")] IAsyncCollector<EventGridEvent> eventCollector,
         CancellationToken cancellationToken)
     {
         log.LogInformation("C# ServiceBus queue trigger function processing message ID {Id}", messageId);
 
         var requestDto = JsonConvert.DeserializeObject<SendWebPushRequestDto>(webPushMessageRequest);
-        var applicationId = requestDto.ApplicationId;
-
-        log.LogInformation(
-            "Processing request for DeviceEndpoint '{DeviceEndpoint}' and ApplicationId '{ApplicationId}'",
-            requestDto.DeviceEndpoint, requestDto.ApplicationId);
 
         if (!ValidationHelpers.ValidateDataAnnotations(requestDto, out var validationResultsForRequest))
         {
             throw new Exception(string.Join(" ", new[] { "Request body is invalid." }.Concat(validationResultsForRequest.Select(s => s.ErrorMessage))));
         }
 
+        var applicationId = requestDto.ApplicationId;
+        var userId = requestDto.UserId;
+
+        var eventGridSubject = _eventGridOptions.Value.SubjectFactory(applicationId);
+
+        var tableQuery = new TableQuery<WebPushDevice>().Where(
+            TableQuery.CombineFilters(
+                TableQuery.GenerateFilterCondition(nameof(WebPushDevice.PartitionKey), QueryComparisons.Equal, applicationId),
+                TableOperators.And,
+                TableQuery.GenerateFilterCondition(nameof(WebPushDevice.UserId), QueryComparisons.Equal, userId)
+            ));
+
+        var devices = (await AzureTableHelper.GetTableRecordsAsync(webPushDevicesTable, tableQuery, cancellationToken)).ToList();
+
+        if (devices.Count == 0)
+        {
+            log.LogWarning("No devices found for user id '{UserId}' and application id '{ApplicationId}'", userId, applicationId);
+
+            const string eventType = "Firepuma.EmailAndPush.NoWebPushDevicesForUser";
+
+            var TODO = "";
+            // Get plumbing in place to receive the event in the Example API (by using the relevant DTO class, ie. NoWebPushDevicesForUserDto or WebPushDeviceUnsubscribedDto)
+
+            var eventData = new NoWebPushDevicesForUserDto
+            {
+                ApplicationId = applicationId,
+                UserId = userId,
+            };
+
+            var e = new EventGridEvent(eventGridSubject, eventType, "1.0.0", eventData);
+            await eventCollector.AddAsync(e, cancellationToken);
+
+            return;
+        }
+
+        var successfulCount = 0;
+        var errors = new List<string>();
+        foreach (var device in devices)
+        {
+            try
+            {
+                await SendPushNotificationToDevice(
+                    log,
+                    webPushDevicesTable,
+                    unsubscribedDevicesCollector,
+                    device,
+                    requestDto,
+                    applicationId,
+                    eventGridSubject,
+                    eventCollector,
+                    cancellationToken);
+
+                successfulCount++;
+            }
+            catch (Exception exception)
+            {
+                errors.Add($"Unable to send push notification to device id '{device.DeviceId}' of application id '{device.ApplicationId}', error: {exception.Message}");
+            }
+        }
+
+        if (errors.Count > 0)
+        {
+            if (successfulCount > 0)
+            {
+                log.LogError(
+                    "Only {SuccessCount}/{TotalCount} push notifications succeeded for user id '{UserId}' of application id '{ApplicationId}', considering it a partial success",
+                    successfulCount, devices.Count, userId, applicationId);
+                return;
+            }
+
+            var combinedErrors = string.Join(". ", errors);
+            throw new Exception($"Only {successfulCount}/{devices.Count} push notifications succeeded for user id '{userId}' of application id '{applicationId}', errors were: {combinedErrors}");
+        }
+    }
+
+    private async Task SendPushNotificationToDevice(
+        ILogger log,
+        CloudTable webPushDevicesTable,
+        IAsyncCollector<UnsubscribedPushDevices> unsubscribedDevicesCollector,
+        WebPushDevice device,
+        SendWebPushRequestDto requestDto,
+        string applicationId,
+        string eventGridSubject,
+        IAsyncCollector<EventGridEvent> eventCollector,
+        CancellationToken cancellationToken)
+    {
+        var deviceEndpoint = device.DeviceEndpoint;
+
+        log.LogInformation(
+            "Processing request for DeviceEndpoint '{DeviceEndpoint}' and ApplicationId '{ApplicationId}'",
+            deviceEndpoint, requestDto.ApplicationId);
+
         var command = new SendWebPush.Command
         {
-            DeviceEndpoint = requestDto.DeviceEndpoint,
-            P256dh = requestDto.P256dh,
-            AuthSecret = requestDto.AuthSecret,
+            DeviceEndpoint = deviceEndpoint,
+            P256dh = device.P256dh,
+            AuthSecret = device.AuthSecret,
             MessageTitle = requestDto.MessageTitle,
             MessageText = requestDto.MessageText,
             MessageType = requestDto.MessageType,
@@ -66,27 +167,64 @@ public class SendWebPushTrigger
 
             if (failure.Reason == SendWebPush.FailureReason.DeviceGone)
             {
-                log.LogInformation("Push device endpoint does not exist anymore: '{DeviceEndpoint}'", requestDto.DeviceEndpoint);
+                log.LogInformation("Push device endpoint does not exist anymore: '{DeviceEndpoint}'", deviceEndpoint);
 
-                var unsubscribeReason = $"{failure.Reason.ToString()} {failure.Message}";
-                var unsubscribedDevice = new UnsubscribedPushDevices
+                await AddUnsubscribedDevice(unsubscribedDevicesCollector, applicationId, failure, device, cancellationToken);
+                await RemoveDevice(webPushDevicesTable, device, cancellationToken);
+
+                const string eventType = "Firepuma.EmailAndPush.WebPushDeviceUnsubscribed";
+
+                var eventData = new WebPushDeviceUnsubscribedDto
                 {
-                    PartitionKey = applicationId,
-                    RowKey = StringUtils.CreateMd5(requestDto.DeviceEndpoint),
-                    DeviceEndpoint = requestDto.DeviceEndpoint,
-                    UnsubscribeReason = unsubscribeReason,
+                    ApplicationId = applicationId,
+                    DeviceId = device.DeviceId,
+                    UserId = device.UserId,
                 };
 
-                await unsubscribedDevicesCollector.AddAsync(unsubscribedDevice, cancellationToken);
+                var e = new EventGridEvent(eventGridSubject, eventType, "1.0.0", eventData);
+                await eventCollector.AddAsync(e, cancellationToken);
             }
             else
             {
                 log.LogError(
                     "Failed to send push notification to device endpoint '{DeviceEndpoint}', failure reason '{Reason}', failure message '{Message}'",
-                    requestDto.DeviceEndpoint, failure.Reason.ToString(), failure.Message);
+                    deviceEndpoint, failure.Reason.ToString(), failure.Message);
 
-                throw new Exception($"Failed to send push notification to device endpoint '{requestDto.DeviceEndpoint}', failure reason '{failure.Reason.ToString()}', failure message '{failure.Message}'");
+                throw new Exception($"Failed to send push notification to device endpoint '{deviceEndpoint}', failure reason '{failure.Reason.ToString()}', failure message '{failure.Message}'");
             }
         }
+    }
+
+    private static async Task AddUnsubscribedDevice(
+        IAsyncCollector<UnsubscribedPushDevices> unsubscribedDevicesCollector,
+        string applicationId,
+        SendWebPush.FailureResult failure,
+        WebPushDevice device,
+        CancellationToken cancellationToken)
+    {
+        var deviceEndpoint = device.DeviceEndpoint;
+
+        var unsubscribeReason = $"{failure.Reason.ToString()} {failure.Message}";
+        var unsubscribedDevice = new UnsubscribedPushDevices
+        {
+            PartitionKey = applicationId,
+            RowKey = StringUtils.CreateMd5(deviceEndpoint),
+            DeviceId = device.DeviceId,
+            UserId = device.UserId,
+            DeviceEndpoint = deviceEndpoint,
+            UnsubscribeReason = unsubscribeReason,
+        };
+
+        await unsubscribedDevicesCollector.AddAsync(unsubscribedDevice, cancellationToken);
+    }
+
+    private static async Task RemoveDevice(
+        CloudTable webPushDevicesTable,
+        WebPushDevice device,
+        CancellationToken cancellationToken)
+    {
+        var deleteOperation = TableOperation.Delete(device);
+
+        await webPushDevicesTable.ExecuteAsync(deleteOperation, cancellationToken);
     }
 }

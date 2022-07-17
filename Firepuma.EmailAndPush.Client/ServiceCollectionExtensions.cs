@@ -15,6 +15,28 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<EmailAndPushClientOptions>(emailAndPushClientConfigurationSection);
 
+        services.AddHttpClient(
+            ServiceBusEmailAndPushClient.HTTP_CLIENT_NAME,
+            (s, client) =>
+            {
+                var options = s.GetRequiredService<IOptions<EmailAndPushClientOptions>>();
+
+                var baseUrl = options.Value.FunctionAppBaseUrl;
+                var secretCode = options.Value.FunctionAppSecretCode;
+
+                if (string.IsNullOrWhiteSpace(baseUrl))
+                {
+                    throw new Exception("FunctionAppBaseUrl is empty but required");
+                }
+
+                client.BaseAddress = new Uri(baseUrl);
+
+                if (!string.IsNullOrWhiteSpace(secretCode))
+                {
+                    client.DefaultRequestHeaders.Add("x-functions-key", secretCode);
+                }
+            });
+
         services.AddSingleton(s =>
         {
             var options = s.GetRequiredService<IOptions<EmailAndPushClientOptions>>();

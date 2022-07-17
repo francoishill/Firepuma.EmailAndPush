@@ -4,6 +4,8 @@ namespace Firepuma.EmailAndPush.FunctionApp.Models.TableModels;
 
 public class UnsubscribedPushDevices : TableEntity
 {
-    public string UnsubscribeReason { get; init; }
+    public string DeviceId { get; set; }
+    public string UserId { get; set; }
     public string DeviceEndpoint { get; init; }
+    public string UnsubscribeReason { get; init; }
 }
