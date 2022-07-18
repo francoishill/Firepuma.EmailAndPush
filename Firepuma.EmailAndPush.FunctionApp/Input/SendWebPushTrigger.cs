@@ -75,9 +75,6 @@ public class SendWebPushTrigger
 
             const string eventType = "Firepuma.EmailAndPush.NoWebPushDevicesForUser";
 
-            var TODO = "";
-            // Get plumbing in place to receive the event in the Example API (by using the relevant DTO class, ie. NoWebPushDevicesForUserDto or WebPushDeviceUnsubscribedDto)
-
             var eventData = new NoWebPushDevicesForUserDto
             {
                 ApplicationId = applicationId,
@@ -167,7 +164,7 @@ public class SendWebPushTrigger
 
             if (failure.Reason == SendWebPush.FailureReason.DeviceGone)
             {
-                log.LogInformation("Push device endpoint does not exist anymore: '{DeviceEndpoint}'", deviceEndpoint);
+                log.LogWarning("Push device endpoint does not exist anymore: '{DeviceEndpoint}'", deviceEndpoint);
 
                 await AddUnsubscribedDevice(unsubscribedDevicesCollector, applicationId, failure, device, cancellationToken);
                 await RemoveDevice(webPushDevicesTable, device, cancellationToken);

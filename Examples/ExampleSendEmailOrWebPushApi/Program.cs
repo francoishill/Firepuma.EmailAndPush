@@ -1,5 +1,10 @@
 using System.Reflection;
+using Azure.Messaging.ServiceBus;
+using ExampleSendEmailOrWebPushApi.Config;
+using ExampleSendEmailOrWebPushApi.Services;
 using Firepuma.EmailAndPush.Client;
+using Firepuma.EmailAndPush.Client.Config;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +14,7 @@ var app = builder.Build();
 ConfigureApp(app);
 app.Run();
 
-static void ConfigureServices(ConfigurationManager configuration, IServiceCollection services)
+static void ConfigureServices(IConfiguration configuration, IServiceCollection services)
 {
     services.AddControllers();
     services.AddEndpointsApiExplorer();
@@ -32,6 +37,8 @@ static void ConfigureServices(ConfigurationManager configuration, IServiceCollec
     });
 
     services.AddEmailAndPushClient(configuration.GetSection("EmailAndPush"));
+
+    AddServiceBusBackgroundProcessor(configuration, services);
 }
 
 static void ConfigureApp(WebApplication app)
@@ -47,4 +54,24 @@ static void ConfigureApp(WebApplication app)
     app.UseAuthorization();
 
     app.MapControllers();
+}
+
+static void AddServiceBusBackgroundProcessor(IConfiguration configuration, IServiceCollection services)
+{
+    services.ConfigureAndValidate<ServiceBusOptions>(configuration.GetSection("ServiceBus"));
+
+    services.AddSingleton(s =>
+    {
+        var options = s.GetRequiredService<IOptions<ServiceBusOptions>>();
+        return new ServiceBusClient(options.Value.ConnectionString);
+    });
+
+    services.AddSingleton(s =>
+    {
+        var options = s.GetRequiredService<IOptions<ServiceBusOptions>>();
+        var client = s.GetRequiredService<ServiceBusClient>();
+        return client.CreateProcessor(options.Value.QueueName);
+    });
+
+    services.AddHostedService<ServiceBusBackgroundProcessor>();
 }
