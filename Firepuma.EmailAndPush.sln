@@ -14,6 +14,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firepuma.EmailAndPush.Client", "Firepuma.EmailAndPush.Client\Firepuma.EmailAndPush.Client.csproj", "{056A3A8B-7073-47B4-BF7F-B99589D191E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{6C7BC5F4-B478-477B-823B-CA7056B67A0A}"
+	ProjectSection(SolutionItems) = preProject
+		Examples\README.md = Examples\README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleSendEmailOrWebPushApi", "Examples\ExampleSendEmailOrWebPushApi\ExampleSendEmailOrWebPushApi.csproj", "{481076BC-453A-4BBC-BC08-3A4DD1171D66}"
 EndProject
